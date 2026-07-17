@@ -1,1 +1,34 @@
+DROP TABLE IF EXISTS order_items;
+DROP TABLE IF EXISTS orders;
+DROP TABLE IF EXISTS products;
+DROP TABLE IF EXISTS users;
 
+CREATE TABLE users (
+    id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    email VARCHAR(255) NOT NULL UNIQUE,
+    created_at TIMESTAMP DEFAULT NOW()
+);
+
+CREATE TABLE products (
+    id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    price NUMERIC(12, 2) CHECK (price > 0),
+    is_active BOOLEAN DEFAULT TRUE,
+    created_at TIMESTAMP
+);
+
+CREATE TABLE orders (
+    id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    user_id BIGINT NOT NULL REFERENCES users (id),
+    status TEXT NOT NULL,
+    created_at TIMESTAMPTZ
+);
+
+CREATE TABLE order_items (
+    id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    order_id BIGINT NOT NULL REFERENCES orders(id),
+    product_id BIGINT NOT NULL REFERENCES products(id),
+    quantity INTEGER NOT NULL CHECK (quantity > 0),
+    unit_price NUMERIC(12, 2) CHECK (unit_price > 0)
+);
